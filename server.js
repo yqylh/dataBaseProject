@@ -60,7 +60,7 @@ app.post('/login', (req,res) => {
                 res.end();
                 return;
             }
-            res.json({code:0, obj:{isManager:ans[0].isManager}});
+            res.json({code:0, obj:{name:ans[0].name,isManager:ans[0].isManager}});
             res.end();
             return;
         })
@@ -79,7 +79,7 @@ app.post('/login', (req,res) => {
                 res.end();
                 return;
             }
-            res.json({code:0, obj:{isManager:ans[0].isManager}});
+            res.json({code:0, obj:{name:ans[0].name,isManager:ans[0].isManager}});
             res.end();
             return;
         })
@@ -136,7 +136,7 @@ app.get('/actList', (req,res) => {
         res.end();
         return;
     }
-    obj = {actiList:[]}
+    obj = {actList:[]}
     mysql.u_pQueryuser_id(req.query.stuId, (ans)=>{
         if (ans[0] == undefined) {
             res.json({code:0, obj});
@@ -150,7 +150,7 @@ app.get('/actList', (req,res) => {
                 return new Promise((resolve,reject)=>{
                     mysql.ProjectQuery(ans[value1].proj_id, (ans)=>{
                         temp = {};
-                        temp.ID = ans[0].proj_id;
+                        temp.proj_id = ans[0].proj_id;
                         temp.Title = ans[0].title;
                         temp.Endtime = ans[0].timestamp.toISOString();
                         temp.Type = ans[0].attributes;
@@ -160,7 +160,7 @@ app.get('/actList', (req,res) => {
             }
             function task2(value2){
                 return new Promise((resolve,reject)=>{
-                    mysql.ManagerQueryProj(temp.ID, (ans)=>{
+                    mysql.ManagerQueryProj(temp.proj_id, (ans)=>{
                         resolve({p1:value2.p1, p2:value2.p2, p3:ans[0].user_id});
                     })
                 });
@@ -170,10 +170,10 @@ app.get('/actList', (req,res) => {
                     user_id = value3.p3;
                     mysql.UserQuery(user_id, (ans)=>{
                         value3.p1.Creator = ans[0].name;
-                        obj.actiList.push(value3.p1);
-                        // console.log(obj.actiList);
+                        obj.actList.push(value3.p1);
+                        // console.log(obj.actList);
                         if (value3.p2 == endlength) {
-                            // console.log(obj.actiList[0].Endtime);
+                            // console.log(obj.actList[0].Endtime);
                             res.json({code:0, obj});
                             res.end();
                         }
@@ -244,8 +244,13 @@ app.get('/actDetail', (req,res) => {
         })
     }
     function getfilename(proj) {
+        // console.log('getfilename');
         return new Promise((resolve, reject) =>{
             num = 0;
+            if (obj.file[0] === undefined) {
+                resolve(proj);
+                return;
+            }
             for (i = 0; i < obj.file.length; i++){
                 mysql.FileQuery(obj.file[i].id, ans=>{
                     // console.log(ans);
@@ -262,6 +267,7 @@ app.get('/actDetail', (req,res) => {
         })
     }
     function getCreator(proj) {
+        // console.log('getCreator');
         return new Promise((resolve, reject) =>{
             mysql.ManagerQueryProj(proj.proj_id, ans=>{
                 mysql.UserQuery(ans[0].user_id, ans=>{
@@ -272,6 +278,7 @@ app.get('/actDetail', (req,res) => {
         })
     }
     function getQusetionaire(proj) {
+        // console.log("getQusetionaire");
         return new Promise((resolve, reject) =>{
             mysql.QuestionnaireQuery(proj.qn_id, ans=>{
                 obj.Questionnaire = {name:ans[0].title, url:ans[0].url};
@@ -303,7 +310,7 @@ app.get('/actDetail', (req,res) => {
         })
     }
     function getUpdate(proj) {
-        console.log('getUpdate');
+        // console.log('getUpdate');
         return new Promise((resolve, reject) =>{
             mysql.proj_uploadQuery(proj.proj_id, ans=>{
                 if (ans[0] == undefined) {
@@ -371,7 +378,6 @@ app.post('/upload', async (req, res)=>{
             mysql.UploadQuery(uploadid, (ans)=>{
                 if (ans[0].sizeLimit >= temp.file.size && ans[0].timeLimit >= new Date()) resolve(ans[0].upload_id)
                     else resolve(-1);
-
             })
         })
     }
