@@ -364,9 +364,12 @@ app.post('/upload', async (req, res)=>{
             const form = new multiparty.Form();
             form.parse(req, function(err, fields, files) {
                 if (err) {
+                    console.log(err);
                     reject(err);
                     return;
                 }
+                console.log(fields);
+                console.log(files);
                 const path = __dirname + "/upload/" + fields.uploadId + '/' + fields.stuId + '/' + files.file[0].originalFilename;
                 resolve({fields:fields, file:files.file[0], path:path});
             });
@@ -415,11 +418,10 @@ app.post('/upload', async (req, res)=>{
                     console.log(err);
                     return;
                 }
-                fs.readdir(des_file, (err, files) => {
+                fs.readdir(des_file, async (err, files) => {
                     if (files[0] != undefined) {
                         console.log(files[0]);
-                        resolve(-2);
-                        return;
+                        await fs.unlinkSync(des_file+'/'+files[0]);
                     }
                     fs.readFile( temp.file.path, function (err, data) {
                         if (err) console.log(err);
@@ -438,25 +440,30 @@ app.post('/upload', async (req, res)=>{
     }
     try {
         const temp = await parseFile(req);
+        // console.log('parseFile', temp)
         const a = await checkUpload(temp);
+        // console.log('checkUpload', a)
         if (a == -1 ) {
             res.json({code:a});
             res.end();
             return;
         }
         const b = await addFile(temp, a);
+        // console.log('addFile', b)
         if (b == -1 ) {
             res.json({code:b});
             res.end();
             return;
         }
         const c = await addu_p_file(temp, b);
+        // console.log('addu_p_file', c)
         if (c == -1 ) {
             res.json({code:c});
             res.end();
             return;
         }
         const write = await writeFile(temp);
+        console.log('writeFile', write)
         if (write != 0) {
             res.json({code:write});
             res.end();

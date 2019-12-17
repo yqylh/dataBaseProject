@@ -14,7 +14,6 @@ const fs = require("fs");
 // var time2 = new Date('2020-1-1 12:14:15');
 // console.log(time1 < new Date());
 // console.log(toString(times))
-
 console.log(__dirname);
 var path = __dirname + '/qwq';
 console.log(path)
