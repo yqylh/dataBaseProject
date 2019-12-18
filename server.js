@@ -709,32 +709,3 @@ app.post('/addUpload', async (req, res)=>{
         res.end();
     }    
 })
-app.post('/deleteFile', async (req, res)=>{
-    findpath = ()=>{
-        return new Promise(resolve=>{
-            mysql.FileQuery(req.body.fileId, ans=>{
-                if (ans[0] == undefined) {
-                    resolve(-1);
-                } else {
-                    mysql.FileDelete(ans[0].file_id);
-                    resolve(ans[0].address);
-                }
-            })
-        })
-    }
-    try{
-        let path = await findpath();
-        console.log(path);
-        if (path != -1) {
-            fs.unlinkSync(path);
-            res.json({code:0});
-        }
-        else {
-            res.json({code:-1});
-        }
-    }catch(err){
-        console.log(err);
-        res.json({code:-1});
-    }
-    res.end();
-})
