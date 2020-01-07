@@ -93,3 +93,7 @@ app.post('/gettoken', async (req, res)=>{
     const gettoken = require('./lib/gettoken.js').gettoken;
     gettoken(req, res, mysql);
 })
+app.post('/updateMe', async (req, res)=>{
+    const updateMe = require('./lib/updateMe.js').updateMe;
+    updateMe(req, res, mysql);
+})
