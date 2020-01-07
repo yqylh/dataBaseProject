@@ -76,7 +76,7 @@ app.post('/ansQue', async (req, res)=>{
     const ansQue = require('./lib/ansQue.js').ansQue;
     ansQue(req, res);
 })
-app.post('/getParterDetail', async (req, res)=>{
+app.get('/getParterDetail', async (req, res)=>{
     const getParterDetail = require('./lib/getParterDetail.js').getParterDetail;
     getParterDetail(req, res);
 })
